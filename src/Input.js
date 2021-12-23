@@ -1,22 +1,14 @@
 import React, { Component } from "react";
+import "./App.css";
 
 class Input extends Component {
   constructor(props) {
     super(props);
-    // this.handlerName = this.handlerName.bind(this);
-    // this.handlerMobile = this.handlerMobile.bind(this);
-    // this.handlerJob = this.handlerJob.bind(this);
-    // this.handlerGender = this.handlerGender.bind(this);
-    // this.handlerTNC = this.handlerTNC.bind(this);
     this.handlerSubmit = this.handlerSubmit.bind(this);
     this.handlerGetInput = this.handlerGetInput.bind(this);
+    this.handlerEdit = this.handlerEdit.bind(this);
 
     this.state = {
-      // fullname: "",
-      // mobile: "",
-      // job: "",
-      // gender: "",
-      // tnc: false,
       data: [],
       Person: {
         fullname: "",
@@ -25,24 +17,12 @@ class Input extends Component {
         gender: "",
         tnc: false,
       },
+      id: "",
+      tog: "",
+     
     };
   }
 
-  // handlerName(e) {
-  //   this.setState({ fullname: e.target.value });
-  // }
-  // handlerMobile(e) {
-  //   this.setState({ mobile: e.target.value });
-  // }
-  // handlerJob(e) {
-  //   this.setState({ job: e.target.value });
-  // }
-  // handlerGender(e) {
-  //   this.setState({ gender: e.target.value });
-  // }
-  // handlerTNC(e) {
-  //   this.setState({ tnc: e.target.checked });
-  // }
   handlerGetInput(e) {
     if (e.target.name === "tnc") {
       this.setState({
@@ -58,44 +38,80 @@ class Input extends Component {
   }
 
   handlerSubmit(e) {
-    // alert(`name${this.state.data.fullname}`);
-
     e.preventDefault();
 
     this.setState(
       {
         ...this.state,
-        data: [...this.state.data, { data: this.state.Person }],
+        data: [...this.state.data, this.state.Person],
       },
       () => {
-        console.log("FDATA", this.state.data);
+        // console.log("FDATA", this.state.data);
+        this.setState({
+          ...this.state,
+          Person: {
+            fullname: "",
+            mobile: "",
+            job: "",
+            gender: "",
+            tnc: false,
+          },
+        });
         this.props.dataupdating(this.state.data);
       }
     );
-    // this.setState(
-    //   {
-    //     ...this.state,
-    //     data: [
-    //       ...this.state.data,
-    //       {
-    //         fullname: this.state.fullname,
-    //         mobile: this.state.mobile,
-    //         job: this.state.job,
-    //         gender: this.state.gender,
-    //         tnc: this.state.tnc,
-    //       },
-    //     ],
-    //   },
-
-    // );
   }
-  // componentDidMount() {
-  //   this.setState({ data: this.props.ddata });
-  // }
+  handlerEdit(e) {
+    e.preventDefault();
+    if (this.state.tog === false) {
+      this.setState({
+        ...this.state,
+        data: [...this.state.data, this.state.Person],
+      });
+    } else {
+      this.setState(
+        {
+          ...this.state,
+          data: this.state.data.map((item, i) => {
+            if (i === this.state.id) {
+              return this.state.Person;
+            }
+            return item;
+          }),
+        },
+        () => {
+          this.setState({
+            ...this.state,
+            Person: {
+              fullname: "",
+              mobile: "",
+              job: "",
+              gender: "",
+              tnc: false,
+            },
+          });
+
+          this.props.dataupdating(this.state.data);
+        }
+      );
+
+      this.setState({ tog: false });
+    }
+  }
+  componentDidUpdate(pP) {
+    if (this.props.edata !== pP.edata) {
+      this.setState({ Person: this.props.edata });
+      this.setState({ id: this.props.ids });
+      this.setState({ tog: this.props.tog });
+      if (this.props.ddata) {
+        this.setState({ data: this.props.ddata });
+      }
+    }
+  }
 
   render() {
     return (
-      <div>
+      <div className="main">
         <form>
           <label>Name:</label>
           <input
@@ -115,7 +131,7 @@ class Input extends Component {
           <br />
           <label>Job:</label>
           <select
-            value={this.state.Person.job}
+            value={this.state.Person.job ?? ""}
             name="job"
             onChange={this.handlerGetInput}
           >
@@ -138,7 +154,7 @@ class Input extends Component {
             <input
               type="radio"
               value="Female"
-              gender="gender"
+              name="gender"
               checked={this.state.Person.gender === "Female"}
               onChange={this.handlerGetInput}
             />
@@ -162,7 +178,11 @@ class Input extends Component {
 
           <label>Trems and Condition</label>
           <br />
-          <button onClick={this.handlerSubmit}>Submit</button>
+          {this.state.tog ? (
+            <button onClick={this.handlerEdit}>Edit</button>
+          ) : (
+            <button onClick={this.handlerSubmit}>Submit</button>
+          )}
         </form>
       </div>
     );

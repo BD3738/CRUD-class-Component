@@ -3,30 +3,30 @@ import React, { Component } from "react";
 class Print extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      //   AllData: [],
-      datas: [],
-    };
+    // this.handlerEdit = this.handlerEdit.bind(this);
+    this.state = {};
   }
-  //   componentDidUpdate() {
-  //     this.setState({
-  //       AllData: this.props.data,
-  //     });
-  //   }
 
   handlerDelete(id) {
     const dt = this.props.data.splice(id, 1);
-    // const dt = this.props.data.filter((d, i) => i !== id);
-    this.setState({ datas: dt });
-    // console.log(this.state.data);
-    // this.props.deletedata(this.state.data);
+    this.props.deletedata(dt);
   }
+  handlerEdit(id) {
+    const dt = this.props.data.find((d, i) => i === id);
+    this.props.editdata(dt);
+
+    this.props.getid(id);
+    this.props.getTog(true);
+  }
+
+  // componentDidUpdate() {
+
+  // }
 
   render() {
     return (
       <div>
-        <table style={{ border: "1px soild black" }}>
+        <table>
           <thead>
             <tr>
               <th>Name</th>
@@ -40,13 +40,16 @@ class Print extends Component {
           <tbody>
             {this.props?.data?.map((data, i) => (
               <tr key={i}>
-                <td>{data.data.fullname}</td>
-                <td>{data.data.mobile}</td>
-                <td>{data.data.job}</td>
-                <td>{data.data.gender}</td>
-                <td>{data.data.tnc ? "true" : "false"}</td>
+                <td>{data?.fullname}</td>
+                <td>{data?.mobile}</td>
+                <td>{data?.job}</td>
+                <td>{data?.gender}</td>
+                <td>{data?.tnc ? "true" : "false"}</td>
                 <td>
-                  <button onClick={() => this.handlerDelete()}>DELETE</button>
+                  <button onClick={() => this.handlerDelete(i)}>DELETE</button>
+                </td>
+                <td>
+                  <button onClick={() => this.handlerEdit(i)}>EDIT</button>
                 </td>
               </tr>
             ))}
